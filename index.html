@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Decentralized Profile</title>
+</head>
+<body>
+    <h1>My Decentralized Profile</h1>
+    <p id="bio">Loading...</p>
+    <button onclick="editProfile()">Edit Profile</button>
+
+    <script>
+        const GITHUB_USER = "your-github-username";
+        const REPO = "your-repo-name";
+        const API_URL = `https://api.github.com/repos/${GITHUB_USER}/${REPO}/contents/profile.json`;
+
+        async function fetchProfile() {
+            let res = await fetch(API_URL);
+            let data = await res.json();
+            let profile = JSON.parse(atob(data.content));
+            document.getElementById("bio").textContent = profile.bio;
+        }
+
+        async function editProfile() {
+            let newBio = prompt("Enter new bio:");
+            let update = { message: "Updating bio", content: btoa(JSON.stringify({ bio: newBio })), sha: "latest" };
+            await fetch(API_URL, { method: "PUT", body: JSON.stringify(update) });
+            location.reload();
+        }
+
+        fetchProfile();
+    </script>
+</body>
+</html>
